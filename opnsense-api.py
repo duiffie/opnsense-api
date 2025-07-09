@@ -4,7 +4,7 @@ import json
 import sys
 from cli.parser import create_parser
 from core.config import load_config
-from modules import aliases, vips, firewall, interfaces, vlans
+from modules import aliases, interfaces, vips, vlans
 
 def main():
     parser = create_parser()
