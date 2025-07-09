@@ -11,7 +11,7 @@ def main():
     args = parser.parse_args()
 
     base_url, auth, proxies = load_config(args.config)
-    print args.cmd
+
     try:
         if args.cmd == 'alias':
             if args.action == 'list':
