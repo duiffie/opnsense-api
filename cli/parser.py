@@ -36,6 +36,14 @@ def create_parser():
     pd.add_argument('--uuid')
     pd.add_argument('--search-name')
 
+    # Interfaces
+    pi = sp.add_parser('list-interfaces')
+    pi.add_argument('--name', help="Filter Interface op naam (descr)")
+
+    # Vlans
+    plvl = sp.add_parser('list-vlan')
+    plvl.add_argument('--name', help="Filter Vlan op naam (descr)")
+
     # VIPs
     plv = sp.add_parser('list-vip')
     plv.add_argument('--name', help="Filter VIP op naam (descr)")
@@ -46,9 +54,5 @@ def create_parser():
     pv.add_argument('--interface', required=True)
     pv.add_argument('--descr', default='')
     pv.add_argument('--enabled', action='store_true')
-
-    # Interfaces
-    pi = sp.add_parser('list-interfaces')
-    pi.add_argument('--name', help="Filter Interface op naam (descr)")
 
     return p
