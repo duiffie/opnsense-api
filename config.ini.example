@@ -1,0 +1,8 @@
+[api]
+base_url = https://opnsense.example.com/api
+key = <api-key>
+secret = <api-secret>
+
+[proxy]
+http = http://myproxy.example.com:8080
+https = http://myproxy.example.com:8080
