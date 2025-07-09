@@ -51,12 +51,12 @@ def main():
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'list-interfaces':
-            interfaces = list_interfaces(base_url, auth, proxies, args.debug).get('rows', [])
+            interfaces = interface.list_interfaces(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
                 filtered = [i for i in interfaces if i.get('descr') == args.name]
                 print(json.dumps(filtered, indent=2))
             else:
-                print(json.dumps(vips, indent=2))
+                print(json.dumps(interfaces, indent=2))
 
         elif args.cmd == 'list-vip':
             vips = vip.list_vips(base_url, auth, proxies, args.debug).get('rows', [])
