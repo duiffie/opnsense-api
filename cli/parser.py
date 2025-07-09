@@ -42,7 +42,7 @@ def create_parser():
 
     # Vlans
     plvl = sp.add_parser('list-vlan')
-    plvl.add_argument('--name', help="Filter Vlan op naam (descr)")
+    plvl.add_argument('--tag', help="Filter Vlan op tag")
 
     # VIPs
     plv = sp.add_parser('list-vip')
