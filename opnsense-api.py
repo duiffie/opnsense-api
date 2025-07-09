@@ -4,7 +4,7 @@ import json
 import sys
 from cli.parser import create_parser
 from core.config import load_config
-from modules import alias, vip, firewall, interface, vlan
+from modules import aliases, vips, firewall, interfaces, vlans
 
 def main():
     parser = create_parser()
@@ -14,7 +14,7 @@ def main():
 
     try:
         if args.cmd == 'list-alias':
-            aliases = alias.list_aliases(base_url, auth, proxies, args.debug).get('rows', [])
+            aliases = aliases.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
                 filtered = [a for a in aliases if a['name'] == args.name]
                 print(json.dumps(filtered, indent=2))
@@ -23,35 +23,35 @@ def main():
 
         elif args.cmd == 'add-alias':
             content_str = '\n'.join(args.content)
-            result = alias.add(base_url, auth, proxies, args.name, args.type, content_str, args.descr, args.enabled, args.debug)
+            result = aliases.add(base_url, auth, proxies, args.name, args.type, content_str, args.descr, args.enabled, args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'update-alias':
-            uuid = args.uuid or alias.get_uuid_by_name(base_url, auth, proxies, args.search_name, args.debug)
+            uuid = args.uuid or aliases.get_uuid_by_name(base_url, auth, proxies, args.search_name, args.debug)
             if not uuid:
                 print(json.dumps({"error": "uuid of --search-name vereist"}, indent=2), file=sys.stderr)
                 sys.exit(1)
             content_str = '\n'.join(args.content) if args.content else None
-            result = alias.update(base_url, auth, proxies, uuid, name=args.name, type_=args.type,
+            result = aliases.update(base_url, auth, proxies, uuid, name=args.name, type_=args.type,
                                   content=content_str, description=args.descr, enabled=args.enabled, debug=args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'delete-alias':
-            uuid = args.uuid or alias.get_uuid_by_name(base_url, auth, proxies, args.search_name, args.debug)
+            uuid = args.uuid or aliases.get_uuid_by_name(base_url, auth, proxies, args.search_name, args.debug)
             if not uuid:
                 print(json.dumps({"error": "uuid of --search-name vereist"}, indent=2), file=sys.stderr)
                 sys.exit(1)
-            result = alias.delete(base_url, auth, proxies, uuid, args.debug)
+            result = aliases.delete(base_url, auth, proxies, uuid, args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'list-interfaces':
-            interfaces = interface.list_interfaces(base_url, auth, proxies, args.debug).get('rows', [])
+            interfaces = interfaces.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
                 filtered = [i for i in interfaces if i.get('description') == args.name]
                 print(json.dumps(filtered, indent=2))
@@ -59,7 +59,7 @@ def main():
                 print(json.dumps(interfaces, indent=2))
 
         elif args.cmd == 'list-vlan':
-            vlans = vlan.list_vlans(base_url, auth, proxies, args.debug).get('rows', [])
+            vlans = vlans.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.tag:
                 filtered = [v for v in vlans if v.get('tag') == args.tag]
                 print(json.dumps(filtered, indent=2))
@@ -67,23 +67,20 @@ def main():
                 print(json.dumps(vlans, indent=2))
 
         elif args.cmd == 'add-vlan':
-            result = vlan.add(
-                base_url, auth, proxies,
-                args.tag, args.parent, args.descr, args.enabled, args.debug
-            )
+            result = vlans.add(base_url, auth, proxies, args.tag, args.parent, args.descr, args.enabled, args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
    
         elif args.cmd == 'delete-vlan':
-            uuid = args.uuid or vlan.get_uuid_by_tag(base_url, auth, proxies, args.tag, args.debug)
-            result = vlan.delete(base_url, auth, proxies, uuid, args.debug)
+            uuid = args.uuid or vlans.get_uuid_by_tag(base_url, auth, proxies, args.tag, args.debug)
+            result = vlans.delete(base_url, auth, proxies, uuid, args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'list-vip':
-            vips = vip.list_vips(base_url, auth, proxies, args.debug).get('rows', [])
+            vips = vips.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
                 filtered = [v for v in vips if v.get('descr') == args.name]
                 print(json.dumps(filtered, indent=2))
@@ -91,7 +88,21 @@ def main():
                 print(json.dumps(vips, indent=2))
 
         elif args.cmd == 'add-vip':
-            result = vip.add(base_url, auth, proxies, args.type, args.subnet, args.interface, args.descr, args.enabled, args.debug)
+            result = vips.add(base_url, auth, proxies, args.type, args.subnet, args.interface, args.descr, args.enabled, args.debug)
+            print(json.dumps(result, indent=2))
+            if not args.no_reload:
+                print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
+
+        elif args.cmd == 'update-vip':
+            uuid = args.uuid or vip.get_uuid_by_descr(base_url, auth, proxies, args.search_name, args.debug)
+            result = vips.update(base_url, auth, proxies, uuid, type_=args.type, subnet=args.subnet, interface=args.interface, descr=args.descr, enabled=args.enabled, debug=args.debug)
+            print(json.dumps(result, indent=2))
+            if not args.no_reload:
+                print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
+
+        elif args.cmd == 'delete-vip':
+            uuid = args.uuid or vip.get_uuid_by_descr(base_url, auth, proxies, args.search_name, args.debug)
+            result = vips.delete(base_url, auth, proxies, uuid, args.debug)
             print(json.dumps(result, indent=2))
             if not args.no_reload:
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))

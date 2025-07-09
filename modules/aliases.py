@@ -2,11 +2,11 @@ from core.api import api_call
 import sys
 import json
 
-def list_aliases(base_url, auth, proxies, debug=False):
+def list(base_url, auth, proxies, debug=False):
     return api_call('GET', f"{base_url}/firewall/alias/search_item", auth, proxies, debug=debug)
 
 def get_uuid_by_name(base_url, auth, proxies, name, debug=False):
-    aliases = list_aliases(base_url, auth, proxies, debug).get('rows', [])
+    aliases = list(base_url, auth, proxies, debug).get('rows', [])
     for a in aliases:
         if a['name'] == name:
             return a['uuid']

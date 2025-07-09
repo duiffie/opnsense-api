@@ -2,11 +2,11 @@ from core.api import api_call
 import sys
 import json
 
-def list_vlans(base_url, auth, proxies, debug=False):
+def list(base_url, auth, proxies, debug=False):
     return api_call('GET', f"{base_url}/interfaces/vlan_settings/search_item", auth, proxies, debug=debug)
 
 def get_uuid_by_tag(base_url, auth, proxies, tag, debug=False):
-    vlans = list_vlans(base_url, auth, proxies, debug).get('rows', [])
+    vlans = list(base_url, auth, proxies, debug).get('rows', [])
     for v in vlans:
         if str(v.get('tag')) == str(tag):
             return v.get('uuid')

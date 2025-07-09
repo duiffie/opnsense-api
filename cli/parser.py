@@ -65,4 +65,17 @@ def create_parser():
     pv.add_argument('--descr', default='')
     pv.add_argument('--enabled', action='store_true')
 
+    puv = sp.add_parser('update-vip')
+    puv.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
+    puv.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
+    puv.add_argument('--type', choices=['ipalias'], help="Mode van VIP")
+    puv.add_argument('--subnet', help="Subnet in CIDR‑notatie")
+    puv.add_argument('--interface', help="Interface waar VIP aan hangt")
+    puv.add_argument('--descr', help="Nieuwe beschrijving")
+    puv.add_argument('--enabled', type=str2bool, help="true of false")
+
+    pdv = sp.add_parser('delete-vip')
+    pdv.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
+    pdv.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
+
     return p
