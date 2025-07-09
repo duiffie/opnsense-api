@@ -66,6 +66,22 @@ def main():
             else:
                 print(json.dumps(vlans, indent=2))
 
+        elif args.cmd == 'add-vlan':
+            result = vlan.add(
+                base_url, auth, proxies,
+                args.tag, args.parent, args.descr, args.enabled, args.debug
+            )
+            print(json.dumps(result, indent=2))
+            if not args.no_reload:
+                print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
+   
+        elif args.cmd == 'delete-vlan':
+            uuid = args.uuid or vlan.get_uuid_by_tag(base_url, auth, proxies, args.tag, args.debug)
+            result = vlan.delete(base_url, auth, proxies, uuid, args.debug)
+            print(json.dumps(result, indent=2))
+            if not args.no_reload:
+                print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
+
         elif args.cmd == 'list-vip':
             vips = vip.list_vips(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:

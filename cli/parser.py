@@ -42,7 +42,17 @@ def create_parser():
 
     # Vlans
     plvl = sp.add_parser('list-vlan')
-    plvl.add_argument('--tag', help="Filter Vlan op tag")
+    plvl.add_argument('--tag', help="Filter Vlan op tag (numeriek)")
+
+    pav = sp.add_parser('add-vlan')
+    pav.add_argument('--tag', required=True, help="VLAN tag (nummer)")
+    pav.add_argument('--parent', required=True, help="Parent interface, bv. igb0")
+    pav.add_argument('--descr', default='', help="Beschrijving van VLAN")
+    pav.add_argument('--enabled', action='store_true', help="Activeer VLAN")
+   
+    pdu = sp.add_parser('delete-vlan')
+    pdu.add_argument('--tag', required=True, help="VLAN tag om te verwijderen (gebruik voor lookup)")
+    pdu.add_argument('--uuid', help="Alternatief: directe UUID van VLAN")
 
     # VIPs
     plv = sp.add_parser('list-vip')
