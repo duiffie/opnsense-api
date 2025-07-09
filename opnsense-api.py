@@ -14,12 +14,12 @@ def main():
 
     try:
         if args.cmd == 'list-alias':
-            aliases = aliases.list(base_url, auth, proxies, args.debug).get('rows', [])
+            result = aliases.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
-                filtered = [a for a in aliases if a['name'] == args.name]
+                filtered = [a for a in result if a['name'] == args.name]
                 print(json.dumps(filtered, indent=2))
             else:
-                print(json.dumps(aliases, indent=2))
+                print(json.dumps(result, indent=2))
 
         elif args.cmd == 'add-alias':
             content_str = '\n'.join(args.content)
@@ -51,12 +51,12 @@ def main():
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'list-interfaces':
-            interfaces = interfaces.list(base_url, auth, proxies, args.debug).get('rows', [])
+            result = interfaces.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
-                filtered = [i for i in interfaces if i.get('description') == args.name]
+                filtered = [i for i in result if i.get('description') == args.name]
                 print(json.dumps(filtered, indent=2))
             else:
-                print(json.dumps(interfaces, indent=2))
+                print(json.dumps(result, indent=2))
 
         elif args.cmd == 'list-vlan':
             vlans = vlans.list(base_url, auth, proxies, args.debug).get('rows', [])
@@ -80,12 +80,12 @@ def main():
                 print(json.dumps(firewall.reload(base_url, auth, proxies, args.debug), indent=2))
 
         elif args.cmd == 'list-vip':
-            vips = vips.list(base_url, auth, proxies, args.debug).get('rows', [])
+            result = vips.list(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
-                filtered = [v for v in vips if v.get('descr') == args.name]
+                filtered = [v for v in result if v.get('descr') == args.name]
                 print(json.dumps(filtered, indent=2))
             else:
-                print(json.dumps(vips, indent=2))
+                print(json.dumps(result, indent=2))
 
         elif args.cmd == 'add-vip':
             result = vips.add(base_url, auth, proxies, args.type, args.subnet, args.interface, args.descr, args.enabled, args.debug)
