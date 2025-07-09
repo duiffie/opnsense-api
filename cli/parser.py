@@ -47,4 +47,8 @@ def create_parser():
     pv.add_argument('--descr', default='')
     pv.add_argument('--enabled', action='store_true')
 
+    # Interfaces
+    pi = sp.add_parser('list-interfaces')
+    pi.add_argument('--name', help="Filter Interface op naam (descr)")
+
     return p
