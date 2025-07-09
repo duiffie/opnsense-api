@@ -1,81 +1,93 @@
 import argparse
 import os
-import sys
 from core.utils import str2bool
 
 def create_parser():
     home_config_path = os.path.expanduser('~/.opnsense-api.ini')
 
-    p = argparse.ArgumentParser(description="OPNsense API-tool voor aliassen en VIP’s")
-    p.add_argument('--config', default=home_config_path, help=f"Pad naar configuratiebestand (standaard: {home_config_path})")
-    p.add_argument('--debug', action='store_true', help="Toon debug-output (API-aanroepen en responses)")
-    p.add_argument('--no-reload', action='store_true', help="Voorkom automatisch herladen firewall na wijziging")
-    sp = p.add_subparsers(dest='cmd', required=True)
+    parser = argparse.ArgumentParser(description="OPNsense API-tool")
+    parser.add_argument('--config', default=home_config_path, help=f"Pad naar configuratiebestand (standaard: {home_config_path})")
+    parser.add_argument('--debug', action='store_true', help="Toon debug-output (API-aanroepen en responses)")
+    parser.add_argument('--no-reload', action='store_true', help="Voorkom automatisch herladen firewall na wijziging")
 
-    # Aliassen
-    pl = sp.add_parser('list-alias')
-    pl.add_argument('--name', help="Filter op aliasnaam")
+    subparsers = parser.add_subparsers(dest='cmd', required=True)
 
-    pa = sp.add_parser('add-alias')
-    pa.add_argument('--name', required=True)
-    pa.add_argument('--type', required=True, choices=['host', 'network', 'port', 'urltable', 'geoip'])
-    pa.add_argument('--content', required=True, nargs='+', help="Meerdere waarden toegestaan, gescheiden door spatie")
-    pa.add_argument('--descr', default='')
-    pa.add_argument('--enabled', action='store_true')
+    # Alias subparsers
+    alias_parser = subparsers.add_parser('alias', help='Beheer aliases')
+    alias_subparsers = alias_parser.add_subparsers(dest='action', required=True, help='Actie voor alias')
 
-    pu = sp.add_parser('update-alias')
-    pu.add_argument('--uuid')
-    pu.add_argument('--search-name')
-    pu.add_argument('--name')
-    pu.add_argument('--type', choices=['host', 'network', 'port', 'urltable', 'geoip'])
-    pu.add_argument('--content', nargs='+', help="Meerdere waarden toegestaan, gescheiden door spatie")
-    pu.add_argument('--descr')
-    pu.add_argument('--enabled', type=str2bool, help="true of false")
+    alias_list = alias_subparsers.add_parser('list', help='Toon lijst met aliases')
+    alias_list.add_argument('--name', help="Filter op aliasnaam")
 
-    pd = sp.add_parser('delete-alias')
-    pd.add_argument('--uuid')
-    pd.add_argument('--search-name')
+    alias_add = alias_subparsers.add_parser('add', help='Voeg alias toe')
+    alias_add.add_argument('--name', required=True)
+    alias_add.add_argument('--type', required=True, choices=['host', 'network', 'port', 'urltable', 'geoip'])
+    alias_add.add_argument('--content', required=True, nargs='+', help="Meerdere waarden toegestaan, gescheiden door spatie")
+    alias_add.add_argument('--descr', default='')
+    alias_add.add_argument('--enabled', action='store_true')
 
-    # Interfaces
-    pi = sp.add_parser('list-interfaces')
-    pi.add_argument('--name', help="Filter Interface op naam (descr)")
+    alias_update = alias_subparsers.add_parser('update', help='Update bestaande alias')
+    alias_update.add_argument('--uuid')
+    alias_update.add_argument('--search-name')
+    alias_update.add_argument('--name')
+    alias_update.add_argument('--type', choices=['host', 'network', 'port', 'urltable', 'geoip'])
+    alias_update.add_argument('--content', nargs='+', help="Meerdere waarden toegestaan, gescheiden door spatie")
+    alias_update.add_argument('--descr')
+    alias_update.add_argument('--enabled', type=str2bool, help="true of false")
 
-    # Vlans
-    plvl = sp.add_parser('list-vlan')
-    plvl.add_argument('--tag', help="Filter Vlan op tag (numeriek)")
+    alias_delete = alias_subparsers.add_parser('delete', help='Verwijder alias')
+    alias_delete.add_argument('--uuid')
+    alias_delete.add_argument('--search-name')
 
-    pav = sp.add_parser('add-vlan')
-    pav.add_argument('--tag', required=True, help="VLAN tag (nummer)")
-    pav.add_argument('--parent', required=True, help="Parent interface, bv. igb0")
-    pav.add_argument('--descr', default='', help="Beschrijving van VLAN")
-    pav.add_argument('--enabled', action='store_true', help="Activeer VLAN")
-   
-    pdu = sp.add_parser('delete-vlan')
-    pdu.add_argument('--tag', required=True, help="VLAN tag om te verwijderen (gebruik voor lookup)")
-    pdu.add_argument('--uuid', help="Alternatief: directe UUID van VLAN")
+    # Interface subparsers
+    interfaces_parser = subparsers.add_parser('interfaces', help='Beheer interfaces')
+    interfaces_subparsers = interfaces_parser.add_subparsers(dest='action', required=True, help='Actie voor interfaces')
 
-    # VIPs
-    plv = sp.add_parser('list-vip')
-    plv.add_argument('--name', help="Filter VIP op naam (descr)")
+    interfaces_list = interfaces_subparsers.add_parser('list', help='Toon lijst met interfaces')
+    interfaces_list.add_argument('--name', help="Filter Interface op naam (descr)")
 
-    pv = sp.add_parser('add-vip')
-    pv.add_argument('--type', required=True, choices=['ipalias'])
-    pv.add_argument('--subnet', required=True)
-    pv.add_argument('--interface', required=True)
-    pv.add_argument('--descr', default='')
-    pv.add_argument('--enabled', action='store_true')
+    # Vlan subparsers
+    vlan_parser = subparsers.add_parser('vlan', help='Beheer VLANs')
+    vlan_subparsers = vlan_parser.add_subparsers(dest='action', required=True, help='Actie voor VLAN')
 
-    puv = sp.add_parser('update-vip')
-    puv.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
-    puv.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
-    puv.add_argument('--type', choices=['ipalias'], help="Mode van VIP")
-    puv.add_argument('--subnet', help="Subnet in CIDR‑notatie")
-    puv.add_argument('--interface', help="Interface waar VIP aan hangt")
-    puv.add_argument('--descr', help="Nieuwe beschrijving")
-    puv.add_argument('--enabled', type=str2bool, help="true of false")
+    vlan_list = vlan_subparsers.add_parser('list', help='Toon lijst met VLANs')
+    vlan_list.add_argument('--tag', help="Filter VLAN op tag (numeriek)")
 
-    pdv = sp.add_parser('delete-vip')
-    pdv.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
-    pdv.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
+    vlan_add = vlan_subparsers.add_parser('add', help='Voeg VLAN toe')
+    vlan_add.add_argument('--tag', required=True, help="VLAN tag (nummer)")
+    vlan_add.add_argument('--parent', required=True, help="Parent interface, bv. igb0")
+    vlan_add.add_argument('--descr', default='', help="Beschrijving van VLAN")
+    vlan_add.add_argument('--enabled', action='store_true', help="Activeer VLAN")
 
-    return p
+    vlan_delete = vlan_subparsers.add_parser('delete', help='Verwijder VLAN')
+    vlan_delete.add_argument('--tag', required=True, help="VLAN tag om te verwijderen (gebruik voor lookup)")
+    vlan_delete.add_argument('--uuid', help="Alternatief: directe UUID van VLAN")
+
+    # VIP subparsers
+    vip_parser = subparsers.add_parser('vip', help='Beheer VIPs')
+    vip_subparsers = vip_parser.add_subparsers(dest='action', required=True, help='Actie voor VIP')
+
+    vip_list = vip_subparsers.add_parser('list', help='Toon lijst met VIPs')
+    vip_list.add_argument('--name', help="Filter VIP op naam (descr)")
+
+    vip_add = vip_subparsers.add_parser('add', help='Voeg VIP toe')
+    vip_add.add_argument('--type', required=True, choices=['ipalias'])
+    vip_add.add_argument('--subnet', required=True)
+    vip_add.add_argument('--interface', required=True)
+    vip_add.add_argument('--descr', default='')
+    vip_add.add_argument('--enabled', action='store_true')
+
+    vip_update = vip_subparsers.add_parser('update', help='Update bestaande VIP')
+    vip_update.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
+    vip_update.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
+    vip_update.add_argument('--type', choices=['ipalias'], help="Mode van VIP")
+    vip_update.add_argument('--subnet', help="Subnet in CIDR‑notatie")
+    vip_update.add_argument('--interface', help="Interface waar VIP aan hangt")
+    vip_update.add_argument('--descr', help="Nieuwe beschrijving")
+    vip_update.add_argument('--enabled', type=str2bool, help="true of false")
+
+    vip_delete = vip_subparsers.add_parser('delete', help='Verwijder VIP')
+    vip_delete.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
+    vip_delete.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
+
+    return parser
