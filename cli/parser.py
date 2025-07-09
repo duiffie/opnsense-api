@@ -8,7 +8,6 @@ def create_parser():
     parser = argparse.ArgumentParser(description="OPNsense API-tool")
     parser.add_argument('--config', default=home_config_path, help=f"Pad naar configuratiebestand (standaard: {home_config_path})")
     parser.add_argument('--debug', action='store_true', help="Toon debug-output (API-aanroepen en responses)")
-    parser.add_argument('--no-reload', action='store_true', help="Voorkom automatisch herladen firewall na wijziging")
 
     subparsers = parser.add_subparsers(dest='cmd', required=True)
 
