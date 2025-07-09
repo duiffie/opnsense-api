@@ -58,7 +58,7 @@ def main():
             else:
                 print(json.dumps(interfaces, indent=2))
 
-        elif args.cmd == 'list-vlans':
+        elif args.cmd == 'list-vlan':
             vlans = vlan.list_vlans(base_url, auth, proxies, args.debug).get('rows', [])
             if args.name:
                 filtered = [v for v in vlans if v.get('descr') == args.name]
