@@ -89,4 +89,10 @@ def create_parser():
     vip_delete.add_argument('--uuid', help="UUID van de VIP (anders zoek op --name)")
     vip_delete.add_argument('--name', dest='search_name', help="Zoek VIP op descr")
 
+    # OPNcentral subparsers
+    opncentral_parser = subparsers.add_parser('opncentral', help='Beheer OPNcentral')
+    opncentral_subparsers = opncentral_parser.add_subparsers(dest='action', required=True, help='Actie voor OPNcentral')
+
+    opncentral_reconfigure = opncentral_subparsers.add_parser('reconfigure', help='Synchroniseer nodes')
+
     return parser
