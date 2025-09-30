@@ -107,6 +107,11 @@ def main():
             else:
                 parser.print_help()
 
+        elif args.cmd == 'opncentral':
+            if args.action == 'reconfigure':
+                result = opncentral.reconfigure(base_url, auth, proxies, args.debug)
+                print(json.dumps(result, indent=2))
+
         else:
             parser.print_help()
 
