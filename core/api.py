@@ -15,7 +15,7 @@ def api_call(method, url, auth: HTTPBasicAuth, proxies=None, data=None, debug=Fa
                 print(json.dumps(data, indent=2))
 
         r = requests.request(method, url, json=data, auth=auth,
-                             verify=False, proxies=proxies if proxies else None, timeout=10)
+                             verify=False, proxies=proxies if proxies else None, timeout=60)
 
         if debug:
             print(f"⬅️  Statuscode: {r.status_code}")
