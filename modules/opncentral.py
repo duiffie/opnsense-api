@@ -2,11 +2,11 @@ from core.api import api_call
 import sys
 import json
 
-def listdevices(base_url, auth, proxies, debug=False):
+def list_devices(base_url, auth, proxies, debug=False):
     return api_call('GET', f"{base_url}/opncentral/host_provisioning/list_devices", auth, proxies, debug=debug)
 
 def reconfigure(base_url, auth, proxies, debug=False):
-    devices = listdevices(base_url, auth, proxies, debug)
+    devices = list_devices(base_url, auth, proxies, debug)
     data = {"hosts": {}}
     for index, item in enumerate(devices):
         data["hosts"][index] = item["id"]
